@@ -1603,7 +1603,7 @@ for itoy in range(ntoys):
   evs = None
   UTval = None
   
-  for ifit in range(2):
+  for ifit in range(20):
     #set likelihood offset again (relevant in case of bad fit convergence from large offset wrt minimum)
     sess.run(nexpnomassign)
     if dofit:
