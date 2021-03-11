@@ -548,8 +548,9 @@ if options.POIMode == "mu":
     #factors["A3"]=4.*math.sqrt(2)
     #factors["A4"]=2.
     #factors["AUL"]=1.
+    #A0 = helxsecL/unpolarizedxsec = (helxsecL'-unpolarizedxsec/6.)/unpolarizedxsec
     
-    mhelcoeffs = tf.constant([[2.,0.,0.,0.,0.,0.],[0.,2.*math.sqrt(2),0.,0.,0.,0.],[0.,0.,4.,0.,0.,0.],[0.,0.,0.,4.*math.sqrt(2),0.,0.],[0.,0.,0.,0.,2.,0.],[0.,0.,0.,0.,0.,1.]],dtype=dtype)
+    mhelcoeffs = tf.constant([[2.,0.,0.,0.,0.,-1.],[0.,2.*math.sqrt(2),0.,0.,0.,-1.],[0.,0.,4.,0.,0.,-1.],[0.,0.,0.,4.*math.sqrt(2),0.,-1.],[0.,0.,0.,0.,2.,0.],[0.,0.,0.,0.,0.,6.]],dtype=dtype)
     mhelsums = tf.matmul(helgroupxsecs,mhelcoeffs,transpose_b=True)
     heltotals = mhelsums[:,-1]
     angularcoeffs = mhelsums[:,:-1]/mhelsums[:,-1:]
