@@ -365,7 +365,8 @@ for chan in chans:
     #get histogram, convert to np array with desired type, and exclude underflow/overflow bins
 
     norm_chan = fShape[chan]['{}'.format(proc)][:]
-    sumw2_chan = fShape[chan]['{}_sumw2'.format(proc)][:]
+    if not chan in options.maskedChan:
+      sumw2_chan = fShape[chan]['{}_sumw2'.format(proc)][:]
     if norm_chan.shape[0] != nbinschan:
       raise Exception("Mismatch between number of bins in channel for data and template")
     
