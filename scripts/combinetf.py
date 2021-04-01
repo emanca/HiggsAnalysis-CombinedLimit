@@ -132,6 +132,8 @@ poly2dreggroupfullorder = f['hpoly2dreggroupfullorder'][...]
 poly2dreggroupnames = f['hpoly2dreggroupnames'][...]
 poly2dreggroupbincenters0 = f['hpoly2dreggroupbincenters0'][...]
 poly2dreggroupbincenters1 = f['hpoly2dreggroupbincenters1'][...]
+P = f['hpreconditioner'][...]
+invP = f['hinvpreconditioner'][...]
 noigroups = f['hnoigroups'][...]
 noigroupidxs = f['hnoigroupidxs'][...]
 maskedchans = f['hmaskedchans'][...]
@@ -170,9 +172,6 @@ nreggroups = len(reggroups)
 npoly1dreggroups = len(poly1dreggroups)
 npoly2dreggroups = len(poly2dreggroups)
 nnoigroups = len(noigroups)
-
-
-
 
 systgroupsfull = systgroups.tolist()
 systgroupsfull.append("stat")
@@ -219,9 +218,10 @@ nparms = npoi + nsyst
 nprof = nparms - nsystnoprofile
 
 parms = np.concatenate([pois,systs])
-
 if boundmode==0:
+  # xpoidefault = poidefault*rescaling
   xpoidefault = poidefault
+  # xpoidefault = tf.squeeze(tf.matmul(tf.expand_dims(poidefault,0),invP))
 elif boundmode==1:
   xpoidefault = tf.sqrt(poidefault)
 
@@ -237,14 +237,21 @@ if npoi>0:
   xdefault = tf.concat([xpoidefault,thetadefault], axis=0)
 else:
   xdefault = thetadefault
-  
-x = tf.Variable(xdefault, name="x")
 
-xpoi = x[:npoi]
-theta = x[npoi:]
+xdefault_resc = tf.squeeze(tf.matmul(tf.expand_dims(xdefault,0),invP))
+x = tf.Variable(xdefault_resc, name="x")
+xprec = tf.squeeze(tf.matmul(tf.expand_dims(x,0),P))
 
-if boundmode == 0:
+xpoi = xprec[:npoi]
+theta = xprec[npoi:]
+
+# xpoi = x[:npoi]
+# theta = x[npoi:]
+
+if boundmode == 0: # POI allowed to be negative
+  # poi = xpoi/rescaling
   poi = xpoi
+  # poi = tf.squeeze(tf.matmul(tf.expand_dims(xpoi,0),P))
   gradr = tf.ones_like(poi)
 elif boundmode == 1:
   poi = tf.square(xpoi)
@@ -1732,8 +1739,6 @@ for itoy in range(ntoys):
 
       hists.append(correlationHist)
       hists.append(covarianceHist)
-      
-      
 
       #set labels
       for ip1, p1 in enumerate(outthetanames):

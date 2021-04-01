@@ -245,6 +245,9 @@ for group in DC.poly2DRegGroups:
     bincenters1.append(bincenter[1])
   poly2dreggroupbincenters0.append(bincenters0)
   poly2dreggroupbincenters1.append(bincenters1)
+
+preconditioner = DC.preconditioner
+invpreconditioner = DC.invpreconditioner
   
 #list of groups of systematics to be treated as additional outputs for impacts, etc (aka "nuisances of interest")
 noigroups = []
@@ -724,6 +727,12 @@ hpoly2dreggroupbincenters0[...] = poly2dreggroupbincenters0
 
 hpoly2dreggroupbincenters1 = f.create_dataset("hpoly2dreggroupbincenters1", [len(poly2dreggroupbincenters1)], dtype=h5py.special_dtype(vlen=np.dtype('float64')), compression="gzip")
 hpoly2dreggroupbincenters1[...] = poly2dreggroupbincenters1
+
+hpreconditioner = f.create_dataset("hpreconditioner", preconditioner.shape, dtype='float64', compression="gzip")
+hpreconditioner[...] = preconditioner
+
+hinvpreconditioner = f.create_dataset("hinvpreconditioner", invpreconditioner.shape, dtype='float64', compression="gzip")
+hinvpreconditioner[...] = invpreconditioner
 
 hnoigroups = f.create_dataset("hnoigroups", [len(noigroups)], dtype=h5py.special_dtype(vlen=str), compression="gzip")
 hnoigroups[...] = noigroups
